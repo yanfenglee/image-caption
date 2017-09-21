@@ -1,5 +1,5 @@
 import tensorflow as tf
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import skimage.transform
 import numpy as np
 import time
@@ -199,29 +199,29 @@ class CaptioningSolver(object):
             alps, bts, sam_cap = sess.run([alphas, betas, sampled_captions], feed_dict)  # (N, max_len, L), (N, max_len)
             decoded = decode_captions(sam_cap, self.model.idx_to_word)
 
-            if attention_visualization:
-                for n in range(10):
-                    print "Sampled Caption: %s" %decoded[n]
+            # if attention_visualization:
+            #     for n in range(10):
+            #         print "Sampled Caption: %s" %decoded[n]
 
-                    # Plot original image
-                    img = ndimage.imread(image_files[n])
-                    plt.subplot(4, 5, 1)
-                    plt.imshow(img)
-                    plt.axis('off')
+            #         # Plot original image
+            #         img = ndimage.imread(image_files[n])
+            #         plt.subplot(4, 5, 1)
+            #         plt.imshow(img)
+            #         plt.axis('off')
 
-                    # Plot images with attention weights 
-                    words = decoded[n].split(" ")
-                    for t in range(len(words)):
-                        if t > 18:
-                            break
-                        plt.subplot(4, 5, t+2)
-                        plt.text(0, 1, '%s(%.2f)'%(words[t], bts[n,t]) , color='black', backgroundcolor='white', fontsize=8)
-                        plt.imshow(img)
-                        alp_curr = alps[n,t,:].reshape(14,14)
-                        alp_img = skimage.transform.pyramid_expand(alp_curr, upscale=16, sigma=20)
-                        plt.imshow(alp_img, alpha=0.85)
-                        plt.axis('off')
-                    plt.show()
+            #         # Plot images with attention weights 
+            #         words = decoded[n].split(" ")
+            #         for t in range(len(words)):
+            #             if t > 18:
+            #                 break
+            #             plt.subplot(4, 5, t+2)
+            #             plt.text(0, 1, '%s(%.2f)'%(words[t], bts[n,t]) , color='black', backgroundcolor='white', fontsize=8)
+            #             plt.imshow(img)
+            #             alp_curr = alps[n,t,:].reshape(14,14)
+            #             alp_img = skimage.transform.pyramid_expand(alp_curr, upscale=16, sigma=20)
+            #             plt.imshow(alp_img, alpha=0.85)
+            #             plt.axis('off')
+            #         plt.show()
 
             if save_sampled_captions:
                 all_sam_cap = np.ndarray((features.shape[0], 20))
