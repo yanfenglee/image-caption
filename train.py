@@ -4,7 +4,7 @@ from core.utils import load_coco_data
 import os
 
 def main():
-    basedir = os.environ('ML_DATA')
+    basedir = os.environ['ML_DATA']
     # load train dataset
     data = load_coco_data(data_path=basedir, split='train')
     word_to_idx = data['word_to_idx']
@@ -16,7 +16,7 @@ def main():
                                                  ctx2out=True, alpha_c=1.0, selector=True, dropout=True)
 
     solver = CaptioningSolver(model, data, val_data, n_epochs=20, batch_size=128, update_rule='adam',
-                                          learning_rate=0.001, print_every=1000, save_every=1, image_path=basedir+'/image/',
+                                          learning_rate=0.001, print_every=100, save_every=1, image_path=basedir+'/image/',
                                     pretrained_model=None, model_path=basedir+'/model/lstm/', test_model=basedir+'/model/lstm/model-10',
                                      print_bleu=True, log_path=basedir+'/log/')
 

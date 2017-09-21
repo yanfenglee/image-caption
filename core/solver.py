@@ -1,5 +1,5 @@
 import tensorflow as tf
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import skimage.transform
 import numpy as np
 import time
@@ -48,6 +48,7 @@ class CaptioningSolver(object):
         self.model_path = kwargs.pop('model_path', './model/')
         self.pretrained_model = kwargs.pop('pretrained_model', None)
         self.test_model = kwargs.pop('test_model', './model/lstm/model-1')
+        self.basedir = kwargs.pop('basedir', os.environ["ML_DATA"])
 
         # set an optimizer by update rule
         if self.update_rule == 'adam':
@@ -75,24 +76,29 @@ class CaptioningSolver(object):
 
         # build graphs for training model and sampling captions
         loss = self.model.build_model()
+        train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
+
         tf.get_variable_scope().reuse_variables()
         _, _, generated_captions = self.model.build_sampler(max_len=20)
 
         # train op
-        with tf.name_scope('optimizer'):
-            optimizer = self.optimizer(learning_rate=self.learning_rate)
-            grads = tf.gradients(loss, tf.trainable_variables())
-            grads_and_vars = list(zip(grads, tf.trainable_variables()))
-            train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
+        # with tf.name_scope('optimizer'):
+        #     optimizer = self.optimizer(learning_rate=self.learning_rate)
+        #     grads = tf.gradients(loss, tf.trainable_variables())
+        #     grads_and_vars = list(zip(grads, tf.trainable_variables()))
+        #     train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
+
+        #with tf.variable_scope(tf.get_variable_scope(),reuse=False):
+        
            
         # summary op   
-        tf.scalar_summary('batch_loss', loss)
-        for var in tf.trainable_variables():
-            tf.histogram_summary(var.op.name, var)
-        for grad, var in grads_and_vars:
-            tf.histogram_summary(var.op.name+'/gradient', grad)
+        # tf.summary.scalar('batch_loss', loss)
+        # for var in tf.trainable_variables():
+        #     tf.summary.histogram(var.op.name, var)
+        # for grad, var in grads_and_vars:
+        #     tf.summary.histogram(var.op.name+'/gradient', grad)
         
-        summary_op = tf.merge_all_summaries() 
+        # summary_op = tf.summary.merge_all() 
 
         print "The number of epoch: %d" %self.n_epochs
         print "Data size: %d" %n_examples
@@ -104,7 +110,7 @@ class CaptioningSolver(object):
         config.gpu_options.allow_growth = True
         with tf.Session(config=config) as sess:
             tf.initialize_all_variables().run()
-            summary_writer = tf.train.SummaryWriter(self.log_path, graph=tf.get_default_graph())
+            #summary_writer = tf.train.SummaryWriter(self.log_path, graph=tf.get_default_graph())
             saver = tf.train.Saver(max_to_keep=40)
 
             if self.pretrained_model is not None:
@@ -129,9 +135,9 @@ class CaptioningSolver(object):
                     curr_loss += l
 
                     # write summary for tensorboard visualization
-                    if i % 10 == 0:
-                        summary = sess.run(summary_op, feed_dict)
-                        summary_writer.add_summary(summary, e*n_iters_per_epoch + i)
+                    # if i % 10 == 0:
+                    #     summary = sess.run(summary_op, feed_dict)
+                    #     summary_writer.add_summary(summary, e*n_iters_per_epoch + i)
 
                     if (i+1) % self.print_every == 0:
                         print "\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(e+1, i+1, l)
@@ -159,8 +165,8 @@ class CaptioningSolver(object):
                         all_gen_cap[i*self.batch_size:(i+1)*self.batch_size] = gen_cap
                     
                     all_decoded = decode_captions(all_gen_cap, self.model.idx_to_word)
-                    save_pickle(all_decoded, "./data/val/val.candidate.captions.pkl")
-                    scores = evaluate(data_path='./data', split='val', get_scores=True)
+                    save_pickle(all_decoded, self.basedir + "/val/val.candidate.captions.pkl")
+                    scores = evaluate(data_path=self.basedir, split='val', get_scores=True)
                     write_bleu(scores=scores, path=self.model_path, epoch=e)
 
                 # save model's parameters
@@ -198,29 +204,29 @@ class CaptioningSolver(object):
             alps, bts, sam_cap = sess.run([alphas, betas, sampled_captions], feed_dict)  # (N, max_len, L), (N, max_len)
             decoded = decode_captions(sam_cap, self.model.idx_to_word)
 
-            if attention_visualization:
-                for n in range(10):
-                    print "Sampled Caption: %s" %decoded[n]
+            # if attention_visualization:
+            #     for n in range(10):
+            #         print "Sampled Caption: %s" %decoded[n]
 
-                    # Plot original image
-                    img = ndimage.imread(image_files[n])
-                    plt.subplot(4, 5, 1)
-                    plt.imshow(img)
-                    plt.axis('off')
+            #         # Plot original image
+            #         img = ndimage.imread(image_files[n])
+            #         plt.subplot(4, 5, 1)
+            #         plt.imshow(img)
+            #         plt.axis('off')
 
-                    # Plot images with attention weights 
-                    words = decoded[n].split(" ")
-                    for t in range(len(words)):
-                        if t > 18:
-                            break
-                        plt.subplot(4, 5, t+2)
-                        plt.text(0, 1, '%s(%.2f)'%(words[t], bts[n,t]) , color='black', backgroundcolor='white', fontsize=8)
-                        plt.imshow(img)
-                        alp_curr = alps[n,t,:].reshape(14,14)
-                        alp_img = skimage.transform.pyramid_expand(alp_curr, upscale=16, sigma=20)
-                        plt.imshow(alp_img, alpha=0.85)
-                        plt.axis('off')
-                    plt.show()
+            #         # Plot images with attention weights 
+            #         words = decoded[n].split(" ")
+            #         for t in range(len(words)):
+            #             if t > 18:
+            #                 break
+            #             plt.subplot(4, 5, t+2)
+            #             plt.text(0, 1, '%s(%.2f)'%(words[t], bts[n,t]) , color='black', backgroundcolor='white', fontsize=8)
+            #             plt.imshow(img)
+            #             alp_curr = alps[n,t,:].reshape(14,14)
+            #             alp_img = skimage.transform.pyramid_expand(alp_curr, upscale=16, sigma=20)
+            #             plt.imshow(alp_img, alpha=0.85)
+            #             plt.axis('off')
+            #         plt.show()
 
             if save_sampled_captions:
                 all_sam_cap = np.ndarray((features.shape[0], 20))
@@ -230,4 +236,4 @@ class CaptioningSolver(object):
                     feed_dict = { self.model.features: features_batch }
                     all_sam_cap[i*self.batch_size:(i+1)*self.batch_size] = sess.run(sampled_captions, feed_dict)  
                 all_decoded = decode_captions(all_sam_cap, self.model.idx_to_word)
-                save_pickle(all_decoded, "./data/%s/%s.candidate.captions.pkl" %(split,split))
+                save_pickle(all_decoded, self.basedir + "/%s/%s.candidate.captions.pkl" %(split,split))
