@@ -90,7 +90,7 @@ class CaptioningSolver(object):
             train_op = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(loss)
            
         # summary op   
-        tf.scalar_summary('batch_loss', loss)
+        tf.summary.scalar('batch_loss', loss)
         for var in tf.trainable_variables():
             tf.histogram_summary(var.op.name, var)
         for grad, var in grads_and_vars:
