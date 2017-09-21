@@ -87,16 +87,16 @@ class CaptioningSolver(object):
         #     train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
 
         with tf.variable_scope(tf.get_variable_scope(),reuse=False):
-            train_op = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(loss)
+            train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
            
         # summary op   
         tf.summary.scalar('batch_loss', loss)
         for var in tf.trainable_variables():
-            tf.histogram_summary(var.op.name, var)
+            tf.summary.histogram(var.op.name, var)
         for grad, var in grads_and_vars:
-            tf.histogram_summary(var.op.name+'/gradient', grad)
+            tf.summary.histogram(var.op.name+'/gradient', grad)
         
-        summary_op = tf.merge_all_summaries() 
+        summary_op = tf.summary.merge_all() 
 
         print "The number of epoch: %d" %self.n_epochs
         print "Data size: %d" %n_examples
