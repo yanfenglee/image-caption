@@ -86,7 +86,8 @@ class CaptioningSolver(object):
         #     grads_and_vars = list(zip(grads, tf.trainable_variables()))
         #     train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
 
-        train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
+        with tf.name_scope('adamoptimizer'):
+            train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
            
         # summary op   
         tf.scalar_summary('batch_loss', loss)
