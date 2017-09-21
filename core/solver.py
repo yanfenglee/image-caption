@@ -76,6 +76,8 @@ class CaptioningSolver(object):
 
         # build graphs for training model and sampling captions
         loss = self.model.build_model()
+        train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
+
         tf.get_variable_scope().reuse_variables()
         _, _, generated_captions = self.model.build_sampler(max_len=20)
 
@@ -87,7 +89,7 @@ class CaptioningSolver(object):
         #     train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
 
         #with tf.variable_scope(tf.get_variable_scope(),reuse=False):
-        train_op = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(loss)
+        
            
         # summary op   
         # tf.summary.scalar('batch_loss', loss)
