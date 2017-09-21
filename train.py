@@ -4,7 +4,7 @@ from core.utils import load_coco_data
 import os
 
 def main():
-    basedir = os.environ('ML_DATA')
+    basedir = os.environ['ML_DATA']
     # load train dataset
     data = load_coco_data(data_path=basedir, split='train')
     word_to_idx = data['word_to_idx']

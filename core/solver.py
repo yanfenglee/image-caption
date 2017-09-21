@@ -48,7 +48,7 @@ class CaptioningSolver(object):
         self.model_path = kwargs.pop('model_path', './model/')
         self.pretrained_model = kwargs.pop('pretrained_model', None)
         self.test_model = kwargs.pop('test_model', './model/lstm/model-1')
-        self.basedir = kwargs.pop('basedir', os.environ("ML_DATA"))
+        self.basedir = kwargs.pop('basedir', os.environ["ML_DATA"])
 
         # set an optimizer by update rule
         if self.update_rule == 'adam':
