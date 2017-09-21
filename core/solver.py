@@ -80,11 +80,13 @@ class CaptioningSolver(object):
         _, _, generated_captions = self.model.build_sampler(max_len=20)
 
         # train op
-        with tf.name_scope('optimizer'):
-            optimizer = self.optimizer(learning_rate=self.learning_rate)
-            grads = tf.gradients(loss, tf.trainable_variables())
-            grads_and_vars = list(zip(grads, tf.trainable_variables()))
-            train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
+        # with tf.name_scope('optimizer'):
+        #     optimizer = self.optimizer(learning_rate=self.learning_rate)
+        #     grads = tf.gradients(loss, tf.trainable_variables())
+        #     grads_and_vars = list(zip(grads, tf.trainable_variables()))
+        #     train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
+
+        train_op = tf.AdamOptimizer(self.learning_rate).minimize(loss)
            
         # summary op   
         tf.scalar_summary('batch_loss', loss)
