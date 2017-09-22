@@ -86,3 +86,6 @@ def save_pickle(data, path):
     with open(path, 'wb') as f:
         pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         print ('Saved %s..' %path)
+
+def seg(sentence):
+    return sentence.split(' ')
