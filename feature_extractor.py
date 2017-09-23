@@ -15,31 +15,40 @@ class FeatureExtractor(object):
 
     def __init__(self, imgcapdata):
         self.data = imgcapdata
+        self.init_images()
 
-    def extract_vgg(vgg_model_path, basedir):
+    def init_images(self):
+        tmp = {i: img for img, i in self.data.image_files.iteritems()}
+        imgs = []
+        for idx in range(len(tmp)):
+            imgs.append(tmp[idx])
+
+        self.images = imgs
+
+    def extract_vgg(self, vgg_model_path, basedir):
         # extract conv5_3 feature vectors
         vggnet = Vgg19(vgg_model_path)
         vggnet.build()
+
         with tf.Session() as sess:
             tf.initialize_all_variables().run()
-            for split in ['train', 'val', 'test']:
-                anno_path = basedir+'/%s/%s.annotations.pkl' % (split, split)
-                save_path = basedir+'/%s/%s.features.hkl' % (split, split)
-                annotations = load_pickle(anno_path)
-                image_path = list(annotations['file_name'].unique())
-                n_examples = len(image_path)
 
-                all_feats = np.ndarray([n_examples, 196, 512], dtype=np.float32)
+            save_path = basedir+'/features.hkl'
 
-                for start, end in zip(range(0, n_examples, batch_size),
-                                    range(batch_size, n_examples + batch_size, batch_size)):
-                    image_batch_file = image_path[start:end]
-                    image_batch = np.array(map(lambda x: ndimage.imread(x, mode='RGB'), image_batch_file)).astype(
-                        np.float32)
-                    feats = sess.run(vggnet.features, feed_dict={vggnet.images: image_batch})
-                    all_feats[start:end, :] = feats
-                    print ("Processed %d %s features.." % (end, split))
+            image_path = self.images
+            n_examples = len(image_path)
 
-                # use hickle to save huge feature vectors
-                hickle.dump(all_feats, save_path)
-                print ("Saved %s.." % (save_path))
+            all_feats = np.ndarray([n_examples, 196, 512], dtype=np.float32)
+
+            for start, end in zip(range(0, n_examples, batch_size),
+                                range(batch_size, n_examples + batch_size, batch_size)):
+                image_batch_file = image_path[start:end]
+                image_batch = np.array(map(lambda x: ndimage.imread(self.data.get_image_path(x), mode='RGB'), image_batch_file)).astype(
+                    np.float32)
+                feats = sess.run(vggnet.features, feed_dict={vggnet.images: image_batch})
+                all_feats[start:end, :] = feats
+                print ("Processed %d features.." %(end)
+
+            # use hickle to save huge feature vectors
+            hickle.dump(all_feats, save_path)
+            print ("Saved %s.." % (save_path))

@@ -27,6 +27,9 @@ class ImgCapData(object):
         self.anno_file = anno_file
         self.vocabs = None
 
+    def get_image_path(self, image_id):
+        return self.basedir + '/' + image_id
+
     def process_annotations(self):
         with open(self.anno_file) as f:
             anno_data = json.load(f)
