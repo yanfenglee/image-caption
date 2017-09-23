@@ -2,6 +2,7 @@ from scipy import ndimage
 from collections import Counter
 from core.vggnet import Vgg19
 from core.utils import *
+import img_cap_data
 
 import tensorflow as tf
 import numpy as np
@@ -11,6 +12,9 @@ import os
 import json
 
 class FeatureExtractor(object):
+
+    def __init__(self, imgcapdata):
+        self.data = imgcapdata
 
     def extract_vgg(vgg_model_path, basedir):
         # extract conv5_3 feature vectors
