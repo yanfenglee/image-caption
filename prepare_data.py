@@ -18,7 +18,7 @@ class ImgCapData(object):
 
     def __init__(self, basedir, anno_file, max_length=15):
         self.basedir = basedir
-        self.data = None
+        self.annotations = None
         self.image_idx = None
         self.image_files = None
         self.caption_vecs = None
@@ -44,7 +44,7 @@ class ImgCapData(object):
                         vocabs[w] += 1
                     data += [{'image':image_id,'caption':cap}]
 
-        self.data = data
+        self.annotations = data
         self.image_files = image_files
         self.vocabs = vocabs
 
@@ -60,11 +60,11 @@ class ImgCapData(object):
         self.w2idx = w2idx
 
     def build_img_cap_vec(self):
-        n_examples = len(self.data)
+        n_examples = len(self.annotations)
         captions = np.ndarray((n_examples,self.max_length+2)).astype(np.int32)
         image_idxs = np.ndarray(n_examples, dtype=np.int32)
 
-        for idx, anno in enumerate(self.data):
+        for idx, anno in enumerate(self.annotations):
             image_idxs[idx] = self.image_files[anno['image']]
             words = seg(anno['caption'])
             vec = []
@@ -82,15 +82,29 @@ class ImgCapData(object):
         self.caption_vecs = captions
 
 
+    def save(self, data, path):
+        save_pickle(data, self.basedir+path)
+
+    def load(self, path):
+        return load_pickle(self.basedir + path)
+
     def build_all_and_save(self):
         self.process_annotations()
         self.build_vocabulary_idx()
         self.build_img_cap_vec()
 
+        self.save(self.annotations, '/annotations.pkl')
+        self.save(self.image_files, '/image_files.pkl')
+        self.save(self.image_idx, '/image_idx.pkl')
+        self.save(self.w2idx, '/w2idx.pkl')
+        self.save(self.caption_vecs, '/caption_vecs.pkl')
         
-
-    def load_data():
-        pass
+    def load_data(self):
+        self.annotations = self.load('/annotations.pkl')
+        self.image_files = self.load('/image_files.pkl')
+        self.image_idx = self.load('/image_idx.pkl')
+        self.w2idx = self.load('/w2idx.pkl')
+        self.caption_vecs = self.load('/caption_vecs.pkl')
 
     def extract_features():
         pass
