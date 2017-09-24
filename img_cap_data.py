@@ -24,7 +24,7 @@ class ImgCapData(object):
         self.caption_vecs = None
         self.w2idx = None
         self.max_length = max_length
-        self.anno_file = anno_file
+        self.anno_file = basedir+anno_file
         self.vocabs = None
 
         # extra
@@ -32,14 +32,14 @@ class ImgCapData(object):
         self.image_idx2file = None
 
     def post_init(self):
-        tmp = {i: img for img, i in self.image_file2idx.iteritems()}
+        tmp = {i: img for img, i in self.image_file2idx.items()}
         n_imgs = len(tmp)
-        imgs = np.ndarray(n_imgs)
+        imgs = []
         for idx in range(n_imgs):
-            imgs[idx] = tmp[idx]
+            imgs.append(tmp[idx])
 
-        self.image_idx2file = imgs 
-        self.idx2w = {i: w for w, i in self.w2idx.iteritems()}
+        self.image_idx2file = np.array(imgs)
+        self.idx2w = {i: w for w, i in self.w2idx.items()}
 
     def get_image_path(self, image_id):
         return self.basedir + '/' + image_id
@@ -75,7 +75,7 @@ class ImgCapData(object):
             idx += 1
 
         self.w2idx = w2idx
-        self.idx2w = {i: w for w, i in w2idx.iteritems()}
+        self.idx2w = {i: w for w, i in w2idx.items()}
 
     def build_img_cap_vec(self):
         n_examples = len(self.annotations)
@@ -89,11 +89,10 @@ class ImgCapData(object):
             vec.append(self.w2idx[self.START])
             for w in words:
                 vec.append(self.w2idx[w])
-            vec.append(self.w2idx(self.END))
+            vec.append(self.w2idx[self.END])
 
             pad_n = self.max_length + 2 - len(vec)
-            vec.extend([self.w2idx[self.NULL] * pad_n])
-
+            vec.extend([self.w2idx[self.NULL]] * pad_n)
             captions[idx,:] = np.asarray(vec)
 
         self.image_idx_vec = image_idx_vecs
@@ -110,11 +109,11 @@ class ImgCapData(object):
             words = []
             for t in range(T):
                 word = self.idx2w[caption_vec[i, t]]
-                if word == '<END>':
-                    words.append('.')
-                if word != '<NULL>':
+                if word == ImgCapData.END:
+                    words.append('。')
+                if word != ImgCapData.NULL:
                     words.append(word)
-            decoded.append(' '.join(words))
+            decoded.append(''.join(words))
 
         return decoded
 
@@ -159,16 +158,16 @@ def test_load():
     data = ImgCapData(basedir,'caption.json')
     data.load_data()
     
-    n_sample = data.caption_vecs.shape()[0]
+    n_sample = data.caption_vecs.shape[0]
     sample = [0,1,3,5,10,20,40,100,150,300,500,1000,10000,20000,40000,n_sample-1]
     vecs = data.caption_vecs[sample,:]
+    
     decoded = data.decode_caption_vec(vecs)
-
-    print(decoded)
 
     imgs = data.image_idx2file[data.image_idx_vec[sample]]
 
-    print(imgs)
+    for img,cap in zip(imgs,decoded):
+        print(img,' ==> ', cap)
     
 if __name__ == "__main__":
-    test()
+    test_load()
