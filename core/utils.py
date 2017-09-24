@@ -89,3 +89,9 @@ def save_pickle(data, path):
 
 def seg(sentence):
     return sentence.split(' ')
+
+def save_hickle(data, path):
+    hickle.dump(data, path)
+
+def load_hickle(path):
+    return hickle.load(path)

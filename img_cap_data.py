@@ -9,6 +9,7 @@ import pandas as pd
 import hickle
 import os
 import json
+from feature_extractor import *
 
 class ImgCapData(object):
     # special tokens
@@ -26,6 +27,7 @@ class ImgCapData(object):
         self.max_length = max_length
         self.anno_file = basedir+anno_file
         self.vocabs = None
+        self.features = None
 
         # extra
         self.idx2w = None
@@ -147,6 +149,13 @@ class ImgCapData(object):
 
         self.post_init()
 
+    def extract_feature(self):
+        fe = FeatureExtractor(self)
+        self.features = fe.extract_vgg()
+        save_hickle(self.features, self.basedir+'/features.hkl')
+
+    def load_feature(self):
+        self.features = load_hickle(self.basedir+'/features.hkl')
 
 def test_build():
     basedir = '/Users/lyfpcy/ml/aichallenge/val/'
@@ -161,7 +170,7 @@ def test_load():
     n_sample = data.caption_vecs.shape[0]
     sample = [0,1,3,5,10,20,40,100,150,300,500,1000,10000,20000,40000,n_sample-1]
     vecs = data.caption_vecs[sample,:]
-    
+
     decoded = data.decode_caption_vec(vecs)
 
     imgs = data.image_idx2file[data.image_idx_vec[sample]]

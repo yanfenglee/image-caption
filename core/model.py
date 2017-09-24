@@ -13,10 +13,11 @@
 from __future__ import division
 
 import tensorflow as tf
+from img_cap_data import *
 
 
 class CaptionGenerator(object):
-    def __init__(self, word_to_idx, dim_feature=[196, 512], dim_embed=512, dim_hidden=1024, n_time_step=16, 
+    def __init__(self, imgcap, word_to_idx, dim_feature=[196, 512], dim_embed=512, dim_hidden=1024, n_time_step=16, 
                   prev2out=True, ctx2out=True, alpha_c=0.0, selector=True, dropout=True):
         """
         Args:
@@ -32,21 +33,23 @@ class CaptionGenerator(object):
             dropout: (optional) If true then dropout layer is added.
         """
         
-        self.word_to_idx = word_to_idx
-        self.idx_to_word = {i: w for w, i in word_to_idx.items()}
+        self.imgcap = imgcap
+
+        #self.word_to_idx = word_to_idx
+        #self.idx_to_word = {i: w for w, i in word_to_idx.items()}
         self.prev2out = prev2out
         self.ctx2out = ctx2out
         self.alpha_c = alpha_c
         self.selector = selector
         self.dropout = dropout
-        self.V = len(word_to_idx)
+        self.V = len(imgcap.w2idx)
         self.L = dim_feature[0]
         self.D = dim_feature[1]
         self.M = dim_embed
         self.H = dim_hidden
         self.T = n_time_step
-        self._start = word_to_idx['<START>']
-        self._null = word_to_idx['<NULL>']
+        #self._start = word_to_idx['<START>']
+        #self._null = word_to_idx['<NULL>']
 
         self.weight_initializer = tf.contrib.layers.xavier_initializer()
         self.const_initializer = tf.constant_initializer(0.0)
@@ -143,7 +146,7 @@ class CaptionGenerator(object):
 
         captions_in = captions[:, :self.T]      
         captions_out = captions[:, 1:]  
-        mask = tf.to_float(tf.not_equal(captions_out, self._null))
+        mask = tf.to_float(tf.not_equal(captions_out, ImgCapData.END))
         
         
         # batch normalize feature vectors
@@ -194,7 +197,7 @@ class CaptionGenerator(object):
 
         for t in range(max_len):
             if t == 0:
-                x = self._word_embedding(inputs=tf.fill([tf.shape(features)[0]], self._start))
+                x = self._word_embedding(inputs=tf.fill([tf.shape(features)[0]], ImgCapData.START))
             else:
                 x = self._word_embedding(inputs=sampled_word, reuse=True)  
           

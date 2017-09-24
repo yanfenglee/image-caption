@@ -7,7 +7,7 @@ import img_cap_data
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-import hickle
+#import hickle
 import os
 import json
 
@@ -16,9 +16,9 @@ class FeatureExtractor(object):
     def __init__(self, imgcapdata):
         self.data = imgcapdata
 
-    def extract_vgg(self, vgg_model_path, save_path):
+    def extract_vgg(self):
         # extract conv5_3 feature vectors
-        vggnet = Vgg19(vgg_model_path)
+        vggnet = Vgg19("vgg_model_path")
         vggnet.build()
 
         with tf.Session() as sess:
@@ -28,15 +28,15 @@ class FeatureExtractor(object):
 
             all_feats = np.ndarray([n_examples, 196, 512], dtype=np.float32)
 
-            for start, end in zip(range(0, n_examples, batch_size),
-                                range(batch_size, n_examples + batch_size, batch_size)):
-                image_batch_file = self.data.image_idx2file[start:end]
-                image_batch = np.array(map(lambda x: ndimage.imread(self.data.get_image_path(x), mode='RGB'), image_batch_file)).astype(
-                    np.float32)
+            for idx in range(0, n_examples, batch_size):
+                image_batch_file = self.data.image_idx2file[idx:idx+batch_size]
+                read_batch = map(lambda x: ndimage.imread(self.data.get_image_path(x), mode='RGB'), image_batch_file)
+                image_batch = np.array(read_batch).astype(np.float32)
                 feats = sess.run(vggnet.features, feed_dict={vggnet.images: image_batch})
-                all_feats[start:end, :] = feats
-                print ("Processed %d features.." %(end)
+                all_feats[idx:idx+batch_size, :] = feats
+                print ("Processed %d features.." %(idx+batch_size)
 
+            return all_feats
             # use hickle to save huge feature vectors
-            hickle.dump(all_feats, save_path)
-            print ("Saved %s.." % (save_path))
+            #hickle.dump(all_feats, save_path)
+            #print ("Saved %s.." % (save_path))

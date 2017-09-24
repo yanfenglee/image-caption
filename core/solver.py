@@ -11,7 +11,7 @@ from bleu import evaluate
 
 
 class CaptioningSolver(object):
-    def __init__(self, model, data, val_data, **kwargs):
+    def __init__(self, model, train_data, val_data, **kwargs):
         """
         Required Arguments:
             - model: Show Attend and Tell caption generating model
@@ -35,7 +35,7 @@ class CaptioningSolver(object):
         """
 
         self.model = model
-        self.data = data
+        self.train_data = train_data
         self.val_data = val_data
         self.n_epochs = kwargs.pop('n_epochs', 10)
         self.batch_size = kwargs.pop('batch_size', 100)
