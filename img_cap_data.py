@@ -17,7 +17,7 @@ class ImgCapData(object):
     END = '<END>'
     NULL = '<NULL>'
 
-    def __init__(self, basedir, anno_file, max_length=15):
+    def __init__(self, basedir, anno_file, max_length=15, max_sample = None):
         self.basedir = basedir
         self.annotations = None
         self.image_idx_vec = None
@@ -28,6 +28,7 @@ class ImgCapData(object):
         self.anno_file = basedir+anno_file
         self.vocabs = None
         self.features = None
+        self.max_sample = max_sample
 
         # extra
         self.idx2w = None
@@ -44,7 +45,7 @@ class ImgCapData(object):
         self.idx2w = {i: w for w, i in self.w2idx.items()}
 
     def get_image_path(self, image_id):
-        return self.basedir + '/' + image_id
+        return self.basedir + '/images/' + image_id
 
     def process_annotations(self):
         with open(self.anno_file) as f:
@@ -54,6 +55,9 @@ class ImgCapData(object):
         image_file2idx = {}
         vocabs = Counter()
         for i, ann in enumerate(anno_data):
+            if self.max_sample != None and i >= self.max_sample:
+                break
+
             image_id = ann['image_id']
             image_file2idx[image_id] = i
             for cap in ann['caption']:

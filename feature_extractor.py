@@ -18,8 +18,11 @@ class FeatureExtractor(object):
 
     def extract_vgg(self):
         # extract conv5_3 feature vectors
-        vggnet = Vgg19("vgg_model_path")
+        
+        vggnet = Vgg19(os.environ['VGG_MODEL'])
         vggnet.build()
+
+        batch_size = 128
 
         with tf.Session() as sess:
             tf.initialize_all_variables().run()
@@ -29,12 +32,17 @@ class FeatureExtractor(object):
             all_feats = np.ndarray([n_examples, 196, 512], dtype=np.float32)
 
             for idx in range(0, n_examples, batch_size):
-                image_batch_file = self.data.image_idx2file[idx:idx+batch_size]
-                read_batch = map(lambda x: ndimage.imread(self.data.get_image_path(x), mode='RGB'), image_batch_file)
+                end = idx+batch_size
+                if end >= n_examples:
+                    end = n_examples-1
+
+                image_batch_file = self.data.image_idx2file[idx:end]
+                read_batch = [ndimage.imread(self.data.get_image_path(x), mode='RGB') for x in image_batch_file]
+                print(read_batch)
                 image_batch = np.array(read_batch).astype(np.float32)
                 feats = sess.run(vggnet.features, feed_dict={vggnet.images: image_batch})
-                all_feats[idx:idx+batch_size, :] = feats
-                print ("Processed %d features.." %(idx+batch_size)
+                all_feats[idx:end, :] = feats
+                print ("Processed %d features.." %(end))
 
             return all_feats
             # use hickle to save huge feature vectors
