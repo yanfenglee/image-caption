@@ -19,13 +19,27 @@ class ImgCapData(object):
     def __init__(self, basedir, anno_file, max_length=15):
         self.basedir = basedir
         self.annotations = None
-        self.image_idx = None
-        self.image_files = None
+        self.image_idx_vec = None
+        self.image_file2idx = None
         self.caption_vecs = None
         self.w2idx = None
         self.max_length = max_length
         self.anno_file = anno_file
         self.vocabs = None
+
+        # extra
+        self.idx2w = None
+        self.image_idx2file = None
+
+    def post_init(self):
+        tmp = {i: img for img, i in self.image_file2idx.iteritems()}
+        n_imgs = len(tmp)
+        imgs = np.ndarray(n_imgs)
+        for idx in range(n_imgs):
+            imgs[idx] = tmp[idx]
+
+        self.image_idx2file = imgs 
+        self.idx2w = {i: w for w, i in self.w2idx.iteritems()}
 
     def get_image_path(self, image_id):
         return self.basedir + '/' + image_id
@@ -35,11 +49,11 @@ class ImgCapData(object):
             anno_data = json.load(f)
 
         data = []
-        image_files = {}
+        image_file2idx = {}
         vocabs = Counter()
         for i, ann in enumerate(anno_data):
             image_id = ann['image_id']
-            image_files[image_id] = i
+            image_file2idx[image_id] = i
             for cap in ann['caption']:
                 words = seg(cap)
                 if len(words) <= self.max_length:
@@ -48,7 +62,7 @@ class ImgCapData(object):
                     data += [{'image':image_id,'caption':cap}]
 
         self.annotations = data
-        self.image_files = image_files
+        self.image_file2idx = image_file2idx
         self.vocabs = vocabs
 
     def build_vocabulary_idx(self):
@@ -61,14 +75,15 @@ class ImgCapData(object):
             idx += 1
 
         self.w2idx = w2idx
+        self.idx2w = {i: w for w, i in w2idx.iteritems()}
 
     def build_img_cap_vec(self):
         n_examples = len(self.annotations)
         captions = np.ndarray((n_examples,self.max_length+2)).astype(np.int32)
-        image_idxs = np.ndarray(n_examples, dtype=np.int32)
+        image_idx_vecs = np.ndarray(n_examples, dtype=np.int32)
 
         for idx, anno in enumerate(self.annotations):
-            image_idxs[idx] = self.image_files[anno['image']]
+            image_idx_vecs[idx] = self.image_file2idx[anno['image']]
             words = seg(anno['caption'])
             vec = []
             vec.append(self.w2idx[self.START])
@@ -81,8 +96,27 @@ class ImgCapData(object):
 
             captions[idx,:] = np.asarray(vec)
 
-        self.image_idx = image_idxs
+        self.image_idx_vec = image_idx_vecs
         self.caption_vecs = captions
+
+    def decode_caption_vec(self, caption_vec):
+        if caption_vec.ndim != 2:
+            raise RuntimeError('caption dim must be 2')
+
+        N, T = caption_vec.shape
+
+        decoded = []
+        for i in range(N):
+            words = []
+            for t in range(T):
+                word = self.idx2w[caption_vec[i, t]]
+                if word == '<END>':
+                    words.append('.')
+                if word != '<NULL>':
+                    words.append(word)
+            decoded.append(' '.join(words))
+
+        return decoded
 
 
     def save(self, data, path):
@@ -96,27 +130,45 @@ class ImgCapData(object):
         self.build_vocabulary_idx()
         self.build_img_cap_vec()
 
+        self.post_init()
+
         self.save(self.annotations, '/annotations.pkl')
-        self.save(self.image_files, '/image_files.pkl')
-        self.save(self.image_idx, '/image_idx.pkl')
+        self.save(self.image_file2idx, '/image_file2idx.pkl')
+        self.save(self.image_idx_vec, '/image_idx_vec.pkl')
         self.save(self.w2idx, '/w2idx.pkl')
         self.save(self.caption_vecs, '/caption_vecs.pkl')
+
         
     def load_data(self):
         self.annotations = self.load('/annotations.pkl')
-        self.image_files = self.load('/image_files.pkl')
-        self.image_idx = self.load('/image_idx.pkl')
+        self.image_file2idx = self.load('/image_file2idx.pkl')
+        self.image_idx_vec = self.load('/image_idx_vec.pkl')
         self.w2idx = self.load('/w2idx.pkl')
         self.caption_vecs = self.load('/caption_vecs.pkl')
 
-    def extract_features():
-        pass
+        self.post_init()
 
 
+def test_build():
+    basedir = '/Users/lyfpcy/ml/aichallenge/val/'
+    data = ImgCapData(basedir,'caption.json')
+    data.build_all_and_save()
 
-def test():
-    basedir = '/Users/lyfpcy/ml/aichallenge'
-    save(basedir)
+def test_load():
+    basedir = '/Users/lyfpcy/ml/aichallenge/val/'
+    data = ImgCapData(basedir,'caption.json')
+    data.load_data()
+    
+    n_sample = data.caption_vecs.shape()[0]
+    sample = [0,1,3,5,10,20,40,100,150,300,500,1000,10000,20000,40000,n_sample-1]
+    vecs = data.caption_vecs[sample,:]
+    decoded = data.decode_caption_vec(vecs)
+
+    print(decoded)
+
+    imgs = data.image_idx2file[data.image_idx_vec[sample]]
+
+    print(imgs)
     
 if __name__ == "__main__":
     test()
