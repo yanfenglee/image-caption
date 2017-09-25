@@ -156,10 +156,10 @@ class ImgCapData(object):
     def extract_feature(self):
         fe = FeatureExtractor(self)
         self.features = fe.extract_vgg()
-        save_hickle(self.features, self.basedir+'/features.hkl')
+        save_pickle(self.features, self.basedir+'/features.pkl')
 
     def load_feature(self):
-        self.features = load_hickle(self.basedir+'/features.hkl')
+        self.features = load_pickle(self.basedir+'/features.pkl')
 
 def test_build():
     basedir = '/Users/lyfpcy/ml/aichallenge/val/'
