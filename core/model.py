@@ -35,8 +35,6 @@ class CaptionGenerator(object):
         
         self.imgcap = imgcap
 
-        #self.word_to_idx = word_to_idx
-        #self.idx_to_word = {i: w for w, i in word_to_idx.items()}
         self.prev2out = prev2out
         self.ctx2out = ctx2out
         self.alpha_c = alpha_c
@@ -48,8 +46,6 @@ class CaptionGenerator(object):
         self.M = dim_embed
         self.H = dim_hidden
         self.T = n_time_step
-        #self._start = word_to_idx['<START>']
-        #self._null = word_to_idx['<NULL>']
 
         self.weight_initializer = tf.contrib.layers.xavier_initializer()
         self.const_initializer = tf.constant_initializer(0.0)

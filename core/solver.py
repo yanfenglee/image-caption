@@ -50,13 +50,6 @@ class CaptioningSolver(object):
         self.test_model = kwargs.pop('test_model', './model/lstm/model-1')
         self.basedir = kwargs.pop('basedir', os.environ["ML_DATA"])
 
-        # set an optimizer by update rule
-        if self.update_rule == 'adam':
-            self.optimizer = tf.train.AdamOptimizer
-        elif self.update_rule == 'momentum':
-            self.optimizer = tf.train.MomentumOptimizer
-        elif self.update_rule == 'rmsprop':
-            self.optimizer = tf.train.RMSPropOptimizer   
 
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
@@ -81,24 +74,6 @@ class CaptioningSolver(object):
         tf.get_variable_scope().reuse_variables()
         _, _, generated_captions = self.model.build_sampler(max_len=20)
 
-        # train op
-        # with tf.name_scope('optimizer'):
-        #     optimizer = self.optimizer(learning_rate=self.learning_rate)
-        #     grads = tf.gradients(loss, tf.trainable_variables())
-        #     grads_and_vars = list(zip(grads, tf.trainable_variables()))
-        #     train_op = optimizer.apply_gradients(grads_and_vars=grads_and_vars)
-
-        #with tf.variable_scope(tf.get_variable_scope(),reuse=False):
-        
-           
-        # summary op   
-        # tf.summary.scalar('batch_loss', loss)
-        # for var in tf.trainable_variables():
-        #     tf.summary.histogram(var.op.name, var)
-        # for grad, var in grads_and_vars:
-        #     tf.summary.histogram(var.op.name+'/gradient', grad)
-        
-        # summary_op = tf.summary.merge_all() 
 
         print "The number of epoch: %d" %self.n_epochs
         print "Data size: %d" %n_examples
@@ -133,11 +108,6 @@ class CaptioningSolver(object):
                     feed_dict = {self.model.features: features_batch, self.model.captions: captions_batch}
                     _, l = sess.run([train_op, loss], feed_dict)
                     curr_loss += l
-
-                    # write summary for tensorboard visualization
-                    # if i % 10 == 0:
-                    #     summary = sess.run(summary_op, feed_dict)
-                    #     summary_writer.add_summary(summary, e*n_iters_per_epoch + i)
 
                     if (i+1) % self.print_every == 0:
                         print "\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(e+1, i+1, l)
