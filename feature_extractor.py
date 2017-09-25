@@ -38,8 +38,7 @@ class FeatureExtractor(object):
 
                 image_batch_file = self.data.image_idx2file[idx:end]
                 read_batch = [ndimage.imread(self.data.get_image_path(x), mode='RGB') for x in image_batch_file]
-                print(read_batch)
-                image_batch = np.array(read_batch).astype(np.float32)
+                image_batch = np.stack(read_batch)
                 feats = sess.run(vggnet.features, feed_dict={vggnet.images: image_batch})
                 all_feats[idx:end, :] = feats
                 print ("Processed %d features.." %(end))
