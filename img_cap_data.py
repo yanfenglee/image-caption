@@ -62,7 +62,7 @@ class ImgCapData(object):
             image_file2idx[image_id] = i
             for cap in ann['caption']:
                 words = seg(cap)
-                if len(words) <= self.max_length:
+                if len(words) <= self.max_length and len(words) > 1:
                     for w in words:
                         vocabs[w] += 1
                     data += [{'image':image_id,'caption':cap}]
