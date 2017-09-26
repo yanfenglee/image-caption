@@ -125,7 +125,7 @@ class CaptioningSolver(object):
                 
                 # print out BLEU scores and file write
                 if self.print_bleu:
-                    all_gen_cap = np.ndarray((val_features.shape[0], 20),dtype=np.int32)
+                    all_gen_cap = np.ndarray((n_iters_val*self.batch_size, 20),dtype=np.int32)
                     for i in range(n_iters_val):
                         features_batch = val_features[i*self.batch_size:(i+1)*self.batch_size]
                         feed_dict = {self.model.features: features_batch}
