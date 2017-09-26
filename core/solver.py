@@ -46,8 +46,6 @@ class CaptioningSolver(object):
         self.log_path = kwargs.pop('log_path', './log/')
         self.model_path = kwargs.pop('model_path', './model/')
         self.pretrained_model = kwargs.pop('pretrained_model', None)
-        self.test_model = kwargs.pop('test_model', './model/lstm/model-1')
-        self.basedir = kwargs.pop('basedir', os.environ["ML_DATA"])
 
 
         if not os.path.exists(self.model_path):
@@ -123,19 +121,19 @@ class CaptioningSolver(object):
                 prev_loss = curr_loss
                 curr_loss = 0
                 
-                # print out BLEU scores and file write
-                if self.print_bleu:
-                    all_gen_cap = np.ndarray((n_iters_val*self.batch_size, 20),dtype=np.int32)
-                    for i in range(n_iters_val):
-                        features_batch = val_features[i*self.batch_size:(i+1)*self.batch_size]
-                        feed_dict = {self.model.features: features_batch}
-                        gen_cap = sess.run(generated_captions, feed_dict=feed_dict)  
-                        all_gen_cap[i*self.batch_size:(i+1)*self.batch_size] = gen_cap
+                # # print out BLEU scores and file write
+                # if self.print_bleu:
+                #     all_gen_cap = np.ndarray((n_iters_val*self.batch_size, 20),dtype=np.int32)
+                #     for i in range(n_iters_val):
+                #         features_batch = val_features[i*self.batch_size:(i+1)*self.batch_size]
+                #         feed_dict = {self.model.features: features_batch}
+                #         gen_cap = sess.run(generated_captions, feed_dict=feed_dict)  
+                #         all_gen_cap[i*self.batch_size:(i+1)*self.batch_size] = gen_cap
                     
-                    all_decoded = self.train_data.decode_caption_vec(all_gen_cap)
-                    save_pickle(all_decoded, self.basedir + "/val/val.candidate.captions.pkl")
-                    scores = evaluate(data_path=self.basedir, split='val', get_scores=True)
-                    write_bleu(scores=scores, path=self.model_path, epoch=e)
+                #     all_decoded = self.train_data.decode_caption_vec(all_gen_cap)
+                #     save_pickle(all_decoded, self.basedir + "/val/val.candidate.captions.pkl")
+                #     scores = evaluate(data_path=self.basedir, split='val', get_scores=True)
+                #     write_bleu(scores=scores, path=self.model_path, epoch=e)
 
                 # save model's parameters
                 if (e+1) % self.save_every == 0:
@@ -204,4 +202,4 @@ class CaptioningSolver(object):
                     feed_dict = { self.model.features: features_batch }
                     all_sam_cap[i*self.batch_size:(i+1)*self.batch_size] = sess.run(sampled_captions, feed_dict)  
                 all_decoded = self.train_data.decode_caption_vec(all_sam_cap)
-                save_pickle(all_decoded, self.basedir + "/%s/%s.candidate.captions.pkl" %(split,split))
+                #save_pickle(all_decoded, self.basedir + "/%s/%s.candidate.captions.pkl" %(split,split))

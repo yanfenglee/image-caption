@@ -21,7 +21,7 @@ class ImgCapData(object):
     N_END = 2
     N_NULL = 0
 
-    def __init__(self, basedir, anno_file, max_length=15, max_sample = None):
+    def __init__(self, basedir, anno_file="caption.json", max_length=15, max_sample = None):
         self.basedir = basedir
         self.annotations = None
         self.image_idx_vec = None
@@ -33,6 +33,7 @@ class ImgCapData(object):
         self.vocabs = None
         self.features = None
         self.max_sample = max_sample
+        self.model_path = basedir + "/model"
 
         # extra
         self.idx2w = None
