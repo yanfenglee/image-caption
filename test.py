@@ -61,4 +61,4 @@ def test(sample_dir="val"):
 
 
 if __name__ == "__main__":
-    main()
+    test("val")
