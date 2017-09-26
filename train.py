@@ -21,7 +21,7 @@ def main():
 
     solver = CaptioningSolver(model, train_data=train_data, val_data=val_data, n_epochs=20, batch_size=128, update_rule='adam',
                                           learning_rate=0.001, print_every=1, save_every=1, image_path=basedir+'/image/',
-                                    pretrained_model=None, model_path=basedir+'/model/lstm/', test_model=basedir+'/model/lstm/model-10',
+                                    pretrained_model=None, model_path=basedir+'/model/',
                                      print_bleu=True, log_path=basedir+'/log/')
 
     solver.train()
