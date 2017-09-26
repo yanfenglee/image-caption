@@ -132,7 +132,7 @@ class CaptioningSolver(object):
                         gen_cap = sess.run(generated_captions, feed_dict=feed_dict)  
                         all_gen_cap[i*self.batch_size:(i+1)*self.batch_size] = gen_cap
                     
-                    all_decoded = self.val_data.decode_caption_vec(all_gen_cap)
+                    all_decoded = self.train_data.decode_caption_vec(all_gen_cap)
                     save_pickle(all_decoded, self.basedir + "/val/val.candidate.captions.pkl")
                     scores = evaluate(data_path=self.basedir, split='val', get_scores=True)
                     write_bleu(scores=scores, path=self.model_path, epoch=e)
@@ -170,7 +170,7 @@ class CaptioningSolver(object):
             features_batch, image_files = sample_coco_minibatch(data, self.batch_size)
             feed_dict = { self.model.features: features_batch }
             alps, bts, sam_cap = sess.run([alphas, betas, sampled_captions], feed_dict)  # (N, max_len, L), (N, max_len)
-            decoded = self.val_data.decode_caption_vec(sam_cap)
+            decoded = self.train_data.decode_caption_vec(sam_cap)
 
             # if attention_visualization:
             #     for n in range(10):
@@ -203,5 +203,5 @@ class CaptioningSolver(object):
                     features_batch = features[i*self.batch_size:(i+1)*self.batch_size]
                     feed_dict = { self.model.features: features_batch }
                     all_sam_cap[i*self.batch_size:(i+1)*self.batch_size] = sess.run(sampled_captions, feed_dict)  
-                all_decoded = self.val_data.decode_caption_vec(all_sam_cap)
+                all_decoded = self.train_data.decode_caption_vec(all_sam_cap)
                 save_pickle(all_decoded, self.basedir + "/%s/%s.candidate.captions.pkl" %(split,split))
