@@ -4,13 +4,14 @@ import os
 from img_cap_data import ImgCapData
 import tensorflow as tf
 import json
+import sys
 
 
 def save_json(data, path):
     with open(path, 'wb') as f:
         json.dump(data, f)
 
-def test(sample_dir="val"):
+def test(sample_dir="val",model_num=1):
 
     basedir = os.environ['ML_DATA']+"/challenge/"
     batch_size = 128
@@ -39,7 +40,7 @@ def test(sample_dir="val"):
     config.gpu_options.allow_growth = True
 
     with tf.Session(config=config) as sess:
-        tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt-1')
+        tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt'+model_num)
 
         num_iter = int(np.ceil(float(features.shape[0]) / batch_size))
         all_sam_cap = np.ndarray((num_iter*batch_size, 20))
@@ -61,4 +62,5 @@ def test(sample_dir="val"):
 
 
 if __name__ == "__main__":
-    test("val")
+    n = sys.argv[1]
+    test("val", model_num=n)
