@@ -1,13 +1,14 @@
 from img_cap_data import ImgCapData
 
-#train data
-train_data = ImgCapData(basedir='/Users/lyfpcy/ml/aichallenge/train/', anno_file='/caption.json', max_sample = 5000)
+import sys
+import os
 
-train_data.build_all_and_save()
-train_data.extract_feature()
+basedir = os.environ["ML_DATA"] + "/challenge/"
 
-# val data
-val_data = ImgCapData(basedir='/Users/lyfpcy/ml/aichallenge/val/', anno_file='/caption.json', max_sample = 1000)
+datadir = sys.argv[1]
+sample_num = int(sys.argv[2])
 
-val_data.build_all_and_save()
-val_data.extract_feature()
+data = ImgCapData(basedir=basedir+datadir, anno_file='/caption.json', max_sample = sample_num)
+
+data.build_all_and_save()
+data.extract_feature()

@@ -17,11 +17,10 @@ from img_cap_data import *
 
 
 class CaptionGenerator(object):
-    def __init__(self, imgcap, word_to_idx, dim_feature=[196, 512], dim_embed=512, dim_hidden=1024, n_time_step=16, 
+    def __init__(self, imgcap, dim_feature=[196, 512], dim_embed=512, dim_hidden=1024, n_time_step=16, 
                   prev2out=True, ctx2out=True, alpha_c=0.0, selector=True, dropout=True):
         """
         Args:
-            word_to_idx: word-to-index mapping dictionary.
             dim_feature: (optional) Dimension of vggnet19 conv5_3 feature vectors.
             dim_embed: (optional) Dimension of word embedding.
             dim_hidden: (optional) Dimension of all hidden state.

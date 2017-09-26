@@ -124,10 +124,10 @@ class ImgCapData(object):
         return decoded
 
 
-    def save(self, data, path):
+    def _save(self, data, path):
         save_pickle(data, self.basedir+path)
 
-    def load(self, path):
+    def _load(self, path):
         return load_pickle(self.basedir + path)
 
     def build_all_and_save(self):
@@ -137,29 +137,29 @@ class ImgCapData(object):
 
         self.post_init()
 
-        self.save(self.annotations, '/annotations.pkl')
-        self.save(self.image_file2idx, '/image_file2idx.pkl')
-        self.save(self.image_idx_vec, '/image_idx_vec.pkl')
-        self.save(self.w2idx, '/w2idx.pkl')
-        self.save(self.caption_vecs, '/caption_vecs.pkl')
+        self._save(self.annotations, '/annotations.pkl')
+        self._save(self.image_file2idx, '/image_file2idx.pkl')
+        self._save(self.image_idx_vec, '/image_idx_vec.pkl')
+        self._save(self.w2idx, '/w2idx.pkl')
+        self._save(self.caption_vecs, '/caption_vecs.pkl')
 
         
     def load_data(self):
-        self.annotations = self.load('/annotations.pkl')
-        self.image_file2idx = self.load('/image_file2idx.pkl')
-        self.image_idx_vec = self.load('/image_idx_vec.pkl')
-        self.w2idx = self.load('/w2idx.pkl')
-        self.caption_vecs = self.load('/caption_vecs.pkl')
+        self.annotations = self._load('/annotations.pkl')
+        self.image_file2idx = self._load('/image_file2idx.pkl')
+        self.image_idx_vec = self._load('/image_idx_vec.pkl')
+        self.w2idx = self._load('/w2idx.pkl')
+        self.caption_vecs = self._load('/caption_vecs.pkl')
 
         self.post_init()
 
     def extract_feature(self):
         fe = FeatureExtractor(self)
         self.features = fe.extract_vgg()
-        save_pickle(self.features, self.basedir+'/features.pkl')
+        self._save(self.features, '/features.pkl')
 
     def load_feature(self):
-        self.features = load_pickle(self.basedir+'/features.pkl')
+        self.features = self._load('/features.pkl')
 
 def test_build():
     basedir = '/Users/lyfpcy/ml/aichallenge/val/'

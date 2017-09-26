@@ -19,7 +19,7 @@ class FeatureExtractor(object):
     def extract_vgg(self):
         # extract conv5_3 feature vectors
         
-        vggnet = Vgg19(os.environ['VGG_MODEL'])
+        vggnet = Vgg19(os.environ['ML_DATA'] + "/challenge/imagenet-vgg-verydeep-19.mat")
         vggnet.build()
 
         batch_size = 128
@@ -33,8 +33,6 @@ class FeatureExtractor(object):
 
             for idx in range(0, n_examples, batch_size):
                 end = idx+batch_size
-                if end >= n_examples:
-                    end = n_examples-1
 
                 image_batch_file = self.data.image_idx2file[idx:end]
                 read_batch = [ndimage.imread(self.data.get_image_path(x), mode='RGB') for x in image_batch_file]
@@ -44,6 +42,3 @@ class FeatureExtractor(object):
                 print ("Processed %d features.." %(end))
 
             return all_feats
-            # use hickle to save huge feature vectors
-            #hickle.dump(all_feats, save_path)
-            #print ("Saved %s.." % (save_path))

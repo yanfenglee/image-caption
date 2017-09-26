@@ -3,56 +3,7 @@ import _pickle as pickle
 import hickle
 import time
 import os
-
-
-# def load_coco_data(data_path='./data', split='train'):
-#     data_path = os.path.join(data_path, split)
-#     start_t = time.time()
-#     data = {}
-  
-#     data['features'] = hickle.load(os.path.join(data_path, '%s.features.hkl' %split))
-#     with open(os.path.join(data_path, '%s.file.names.pkl' %split), 'rb') as f:
-#         data['file_names'] = pickle.load(f)   
-#     with open(os.path.join(data_path, '%s.captions.pkl' %split), 'rb') as f:
-#         data['captions'] = pickle.load(f)
-#     with open(os.path.join(data_path, '%s.image.idxs.pkl' %split), 'rb') as f:
-#         data['image_idxs'] = pickle.load(f)
-            
-#     if split == 'train':       
-#         with open(os.path.join(data_path, 'word_to_idx.pkl'), 'rb') as f:
-#             data['word_to_idx'] = pickle.load(f)
-          
-#     for k, v in data.iteritems():
-#         if type(v) == np.ndarray:
-#             print k, type(v), v.shape, v.dtype
-#         else:
-#             print k, type(v), len(v)
-#     end_t = time.time()
-#     print "Elapse time: %.2f" %(end_t - start_t)
-#     return data
-
-# def decode_captions(captions, idx_to_word):
-#     if captions.ndim == 1:
-#         T = captions.shape[0]
-#         N = 1
-#     else:
-#         N, T = captions.shape
-
-#     decoded = []
-#     for i in range(N):
-#         words = []
-#         for t in range(T):
-#             if captions.ndim == 1:
-#                 word = idx_to_word[captions[t]]
-#             else:
-#                 word = idx_to_word[captions[i, t]]
-#             if word == '<END>':
-#                 words.append('.')
-#                 break
-#             if word != '<NULL>':
-#                 words.append(word)
-#         decoded.append(' '.join(words))
-#     return decoded
+import jieba
 
 def sample_coco_minibatch(data, batch_size):
     data_size = data['features'].shape[0]
@@ -88,7 +39,8 @@ def save_pickle(data, path):
         print ('Saved %s..' %path)
 
 def seg(sentence):
-    return sentence.split(' ')
+    seg_list = jieba.cut(sentence, cut_all=False)
+    return list(seg_list)
 
 def save_hickle(data, path):
     hickle.dump(data, path)
