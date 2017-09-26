@@ -27,7 +27,7 @@ def test(sample_dir="val",model_num=1):
 
 
 
-    model = CaptionGenerator(imgcap=data, dim_feature=[196, 512], dim_embed=512,
+    model = CaptionGenerator(imgcap=model_data, dim_feature=[196, 512], dim_embed=512,
                                        dim_hidden=1024, n_time_step=16, prev2out=True, 
                                                  ctx2out=True, alpha_c=1.0, selector=True, dropout=True)
 
