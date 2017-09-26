@@ -82,7 +82,7 @@ class CaptioningSolver(object):
         #config.gpu_options.per_process_gpu_memory_fraction=0.9
         config.gpu_options.allow_growth = True
         with tf.Session(config=config) as sess:
-            tf.initialize_all_variables().run()
+            tf.global_variables_initializer().run()
             #summary_writer = tf.train.SummaryWriter(self.log_path, graph=tf.get_default_graph())
             saver = tf.train.Saver(max_to_keep=40)
 

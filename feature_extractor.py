@@ -25,7 +25,7 @@ class FeatureExtractor(object):
         batch_size = 128
 
         with tf.Session() as sess:
-            tf.initialize_all_variables().run()
+            tf.global_variables_initializer().run()
 
             n_examples = len(self.data.image_idx2file)
 
