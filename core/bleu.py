@@ -1,4 +1,4 @@
-import _pickle as pickle
+import cPickle as pickle
 import os
 import sys
 from .pycocoevalcap.bleu.bleu import Bleu

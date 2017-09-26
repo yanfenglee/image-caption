@@ -141,7 +141,7 @@ class CaptionGenerator(object):
 
         captions_in = captions[:, :self.T]      
         captions_out = captions[:, 1:]  
-        mask = tf.to_float(tf.not_equal(captions_out, ImgCapData.END))
+        mask = tf.to_float(tf.not_equal(captions_out, ImgCapData.N_END))
         
         
         # batch normalize feature vectors
@@ -192,7 +192,7 @@ class CaptionGenerator(object):
 
         for t in range(max_len):
             if t == 0:
-                x = self._word_embedding(inputs=tf.fill([tf.shape(features)[0]], ImgCapData.START))
+                x = self._word_embedding(inputs=tf.fill([tf.shape(features)[0]], ImgCapData.N_START))
             else:
                 x = self._word_embedding(inputs=sampled_word, reuse=True)  
           
@@ -208,7 +208,7 @@ class CaptionGenerator(object):
 
             logits = self._decode_lstm(x, h, context, reuse=(t!=0))
             sampled_word = tf.argmax(logits, 1)       
-            sampled_word_list.append(sampled_word)     
+            sampled_word_list.append(sampled_word)  
 
         alphas = tf.transpose(tf.stack(alpha_list), (1, 0, 2))     # (N, T, L)
         betas = tf.transpose(tf.squeeze(beta_list), (1, 0))    # (N, T)

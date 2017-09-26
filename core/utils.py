@@ -1,5 +1,5 @@
 import numpy as np
-import _pickle as pickle
+import cPickle as pickle
 import hickle
 import time
 import os
@@ -35,7 +35,7 @@ def load_pickle(path):
 
 def save_pickle(data, path):
     with open(path, 'wb') as f:
-        pickle.dump(data, f)
+        pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
         print ('Saved %s..' %path)
 
 def seg(sentence):

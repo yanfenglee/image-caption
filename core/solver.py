@@ -58,10 +58,10 @@ class CaptioningSolver(object):
 
     def train(self):
         # train/val dataset
-        n_examples = self.tain_data.caption_vecs.shape[0]
+        n_examples = self.train_data.caption_vecs.shape[0]
         n_iters_per_epoch = int(np.ceil(float(n_examples)/self.batch_size))
         features = self.train_data.features
-        captions = self.tain_data.caption_vecs
+        captions = self.train_data.caption_vecs
         image_idxs = self.train_data.image_idx_vec
         val_features = self.val_data.features
         n_iters_val = int(np.ceil(float(val_features.shape[0])/self.batch_size))
@@ -110,11 +110,11 @@ class CaptioningSolver(object):
                     if (i+1) % self.print_every == 0:
                         print("\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(e+1, i+1, l))
                         ground_truths = captions[image_idxs == image_idxs_batch[0]]
-                        decoded = decode_captions(ground_truths, self.model.idx_to_word)
+                        decoded = self.train_data.decode_caption_vec(ground_truths)
                         for j, gt in enumerate(decoded):
                             print("Ground truth %d: %s" %(j+1, gt))
                         gen_caps = sess.run(generated_captions, feed_dict)
-                        decoded = decode_captions(gen_caps, self.model.idx_to_word)
+                        decoded = self.train_data.decode_caption_vec(gen_caps)
                         print("Generated caption: %s\n" %decoded[0])
 
                 print ("Previous epoch loss: ", prev_loss)
@@ -125,14 +125,14 @@ class CaptioningSolver(object):
                 
                 # print out BLEU scores and file write
                 if self.print_bleu:
-                    all_gen_cap = np.ndarray((val_features.shape[0], 20))
+                    all_gen_cap = np.ndarray((val_features.shape[0], 20),dtype=np.int32)
                     for i in range(n_iters_val):
                         features_batch = val_features[i*self.batch_size:(i+1)*self.batch_size]
                         feed_dict = {self.model.features: features_batch}
                         gen_cap = sess.run(generated_captions, feed_dict=feed_dict)  
                         all_gen_cap[i*self.batch_size:(i+1)*self.batch_size] = gen_cap
                     
-                    all_decoded = decode_captions(all_gen_cap, self.model.idx_to_word)
+                    all_decoded = self.val_data.decode_caption_vec(all_gen_cap)
                     save_pickle(all_decoded, self.basedir + "/val/val.candidate.captions.pkl")
                     scores = evaluate(data_path=self.basedir, split='val', get_scores=True)
                     write_bleu(scores=scores, path=self.model_path, epoch=e)
@@ -170,7 +170,7 @@ class CaptioningSolver(object):
             features_batch, image_files = sample_coco_minibatch(data, self.batch_size)
             feed_dict = { self.model.features: features_batch }
             alps, bts, sam_cap = sess.run([alphas, betas, sampled_captions], feed_dict)  # (N, max_len, L), (N, max_len)
-            decoded = decode_captions(sam_cap, self.model.idx_to_word)
+            decoded = self.val_data.decode_caption_vec(sam_cap)
 
             # if attention_visualization:
             #     for n in range(10):
@@ -203,5 +203,5 @@ class CaptioningSolver(object):
                     features_batch = features[i*self.batch_size:(i+1)*self.batch_size]
                     feed_dict = { self.model.features: features_batch }
                     all_sam_cap[i*self.batch_size:(i+1)*self.batch_size] = sess.run(sampled_captions, feed_dict)  
-                all_decoded = decode_captions(all_sam_cap, self.model.idx_to_word)
+                all_decoded = self.val_data.decode_caption_vec(all_sam_cap)
                 save_pickle(all_decoded, self.basedir + "/%s/%s.candidate.captions.pkl" %(split,split))

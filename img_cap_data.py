@@ -17,6 +17,10 @@ class ImgCapData(object):
     END = '<END>'
     NULL = '<NULL>'
 
+    N_START = 1
+    N_END = 2
+    N_NULL = 0
+
     def __init__(self, basedir, anno_file, max_length=15, max_sample = None):
         self.basedir = basedir
         self.annotations = None
@@ -74,7 +78,7 @@ class ImgCapData(object):
     def build_vocabulary_idx(self):
 
         vocab = [w for w in self.vocabs]
-        w2idx = {self.NULL: 0, self.START: 1, self.END: 2}
+        w2idx = {self.NULL: self.N_NULL, self.START: self.N_START, self.END: self.N_END}
         idx = 3
         for word in vocab:
             w2idx[word] = idx
@@ -116,7 +120,7 @@ class ImgCapData(object):
             for t in range(T):
                 word = self.idx2w[caption_vec[i, t]]
                 if word == ImgCapData.END:
-                    words.append('。')
+                    words.append(' .')
                 if word != ImgCapData.NULL:
                     words.append(word)
             decoded.append(''.join(words))
