@@ -176,7 +176,7 @@ class CaptionGenerator(object):
 
         return loss / tf.to_float(batch_size)
 
-    def build_sampler(self, max_len=20):
+    def build_inference(self, max_len=20):
         features = self.features
         
         # batch normalize feature vectors

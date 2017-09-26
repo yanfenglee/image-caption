@@ -34,7 +34,7 @@ def test(sample_dir="val",model_num=1):
     features = data.features
 
     # build a graph to sample captions
-    alphas, betas, sampled_captions = model.build_sampler(max_len=20)    # (N, max_len, L), (N, max_len)
+    alphas, betas, sampled_captions = model.build_inference(max_len=20)    # (N, max_len, L), (N, max_len)
     
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth = True

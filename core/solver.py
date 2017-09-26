@@ -69,7 +69,7 @@ class CaptioningSolver(object):
         train_op = tf.train.AdamOptimizer(self.learning_rate).minimize(loss)
 
         tf.get_variable_scope().reuse_variables()
-        _, _, generated_captions = self.model.build_sampler(max_len=20)
+        _, _, generated_captions = self.model.build_inference(max_len=20)
 
 
         print("Data size: %d" %n_examples)
@@ -158,7 +158,7 @@ class CaptioningSolver(object):
         features = data['features']
 
         # build a graph to sample captions
-        alphas, betas, sampled_captions = self.model.build_sampler(max_len=20)    # (N, max_len, L), (N, max_len)
+        alphas, betas, sampled_captions = self.model.build_inference(max_len=20)    # (N, max_len, L), (N, max_len)
         
         config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.allow_growth = True
