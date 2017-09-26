@@ -39,7 +39,7 @@ def test(sample_dir="val"):
     config.gpu_options.allow_growth = True
 
     with tf.Session(config=config) as sess:
-        tf.train.Saver().restore(sess, basedir+'/model/imgcap.ckpt')
+        tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt')
 
         num_iter = int(np.ceil(float(features.shape[0]) / batch_size))
         all_sam_cap = np.ndarray((num_iter*batch_size, 20))
