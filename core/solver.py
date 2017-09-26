@@ -138,7 +138,7 @@ class CaptioningSolver(object):
                 # save model's parameters
                 if (e+1) % self.save_every == 0:
                     saver.save(sess, os.path.join(self.model_path, 'imgcap-model/model.ckpt'), global_step=e+1)
-                    print ("model-%s saved." %(e+1))
+                    print ("model.ckpt-%s saved." %(e+1))
             
          
     def test(self, data, split='train', attention_visualization=True, save_sampled_captions=True):
