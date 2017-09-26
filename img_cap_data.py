@@ -33,7 +33,6 @@ class ImgCapData(object):
         self.vocabs = None
         self.features = None
         self.max_sample = max_sample
-        self.model_path = basedir + "/model"
 
         # extra
         self.idx2w = None
