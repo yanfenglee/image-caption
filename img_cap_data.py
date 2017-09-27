@@ -6,7 +6,6 @@ from core.utils import *
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-import hickle
 import sys
 import os
 import json
