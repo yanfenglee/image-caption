@@ -19,7 +19,7 @@ def resize_image(image):
     return image
 
 def main():
-    basedir = sys.argv[1] + '/challenge'
+    basedir = sys.argv[1]
 
     folder = basedir+'/images_org'
     resized_folder = basedir+'/images'
