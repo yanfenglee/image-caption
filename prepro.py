@@ -6,7 +6,7 @@ from core.utils import *
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-import hickle
+#import hickle
 import os
 import json
 
@@ -205,8 +205,8 @@ def main():
                 print ("Processed %d %s features.." % (end, split))
 
             # use hickle to save huge feature vectors
-            hickle.dump(all_feats, save_path)
-            print ("Saved %s.." % (save_path))
+            #hickle.dump(all_feats, save_path)
+            #print ("Saved %s.." % (save_path))
 
 
 if __name__ == "__main__":
