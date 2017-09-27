@@ -55,7 +55,7 @@ def test(sample_dir="val",model_num=1):
         caption = []
         for idx, cap in enumerate(all_decoded):
             img = data.image_idx2file[idx]
-            caption.append({"image_id": img, "caption": cap})
+            caption.append({"image_id": img.strip('.jpg'), "caption": cap})
         
         save_json(caption, save_path)
 
