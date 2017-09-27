@@ -1,6 +1,6 @@
 import numpy as np
 import cPickle as pickle
-import hickle
+#import hickle
 import time
 import os
 import jieba
@@ -42,8 +42,8 @@ def seg(sentence):
     seg_list = jieba.cut(sentence, cut_all=False)
     return list(seg_list)
 
-def save_hickle(data, path):
-    hickle.dump(data, path)
+# def save_hickle(data, path):
+#     hickle.dump(data, path)
 
-def load_hickle(path):
-    return hickle.load(path)
+# def load_hickle(path):
+#     return hickle.load(path)
