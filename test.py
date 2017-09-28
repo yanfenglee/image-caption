@@ -11,6 +11,7 @@ from feature_extractor import FeatureExtractor
 def save_json(data, path):
     with open(path, 'wb') as f:
         json.dump(data, f)
+        print 'save json finished: ', path
 
 def test(sample_dir="val",model_num=1):
 
