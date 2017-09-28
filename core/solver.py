@@ -89,7 +89,8 @@ class CaptioningSolver(object):
             curr_loss = 0
             start_t = time.time()
 
-            for e in range(self.n_epochs):
+            epoch = 0
+            while epoch < self.n_epochs:
                 rand_idxs = np.random.permutation(n_examples)
                 captions = captions[rand_idxs]
                 image_idxs = image_idxs[rand_idxs]
@@ -103,7 +104,7 @@ class CaptioningSolver(object):
                     curr_loss += l
 
                     if (i+1) % self.print_every == 0:
-                        print("\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(e+1, i+1, l))
+                        print("\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(epoch+1, i+1, l))
                         ground_truths = captions[image_idxs == image_idxs_batch[0]]
                         decoded = self.train_data.decode_caption_vec(ground_truths)
                         for j, gt in enumerate(decoded):
@@ -132,10 +133,11 @@ class CaptioningSolver(object):
                 #     scores = evaluate(data_path=self.basedir, split='val', get_scores=True)
                 #     write_bleu(scores=scores, path=self.model_path, epoch=e)
 
+                epoch += 1
                 # save model's parameters
-                if (e+1) % self.save_every == 0:
-                    saver.save(sess, os.path.join(self.model_path, 'imgcap-model/model.ckpt'), global_step=e+1)
-                    print ("model.ckpt-%s saved." %(e+1))
+                if epoch % self.save_every == 0 or epoch == self.n_epochs:
+                    saver.save(sess, os.path.join(self.model_path, 'imgcap-model/model.ckpt'), global_step=epoch)
+                    print ("model.ckpt-%s saved." % epoch)
             
          
     def test(self, data, split='train', attention_visualization=True, save_sampled_captions=True):
