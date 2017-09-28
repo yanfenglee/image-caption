@@ -42,7 +42,7 @@ def test(sample_dir="val",model_num=1):
         tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt'+model_num)
 
         nexamples = features.shape[0]
-        all_sam_cap = np.ndarray((nexamples, 20))
+        all_sam_cap = np.ndarray((nexamples, 20),dtype=np.int32)
 
         for i in range(0, nexamples, batch_size):
             end = i+batch_size
