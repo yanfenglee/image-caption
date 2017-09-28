@@ -3,7 +3,7 @@ import h5py
 import os
 
 class H5Tensor(object):
-    def __init__(self, store_path, maxshape, dtype=np.float32):
+    def __init__(self, store_path, maxshape=None, dtype=np.float32):
         self.store_path = store_path
         self.maxshape = maxshape
         self.h = None
@@ -11,14 +11,22 @@ class H5Tensor(object):
 
         if os.path.isfile(store_path):
             self.h = h5py.File(store_path,mode='r+')
-            self._check_shape_compatible(self.data().shape,maxshape)
 
     def _check_shape_compatible(self, s1, s2):
         if s1[1:] != s2[1:]:
             raise RuntimeError("shape not compatible: ", s1,'!=',s2)
 
     def data(self):
+        if self.h == None:
+            raise RuntimeError("no data found")
+
         return self.h['data'][:]
+
+    def get_shape(self):
+        if self.h != None:
+            return self.h['data'].shape
+
+        return (0,) + self.maxshape[1:]
 
     def flush(self):
         self.h.flush()
@@ -44,13 +52,15 @@ def test():
     
     t = H5Tensor('tensor1.h5',maxshape=(1000000,2,2),dtype=np.int32)
     
+    print(t.get_shape())
+    
     for i in range(1000):
         t.append(aa)
 
-    print(t.data().shape)
+    print(t.get_shape())
 
     t.append(bb)
-    print(t.data().shape)
+    print(t.get_shape())
 
     #print(t.data())
 

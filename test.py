@@ -47,9 +47,6 @@ def test(sample_dir="val",model_num=1):
 
         for i in range(0, nexamples, batch_size):
             end = i+batch_size
-            if end > nexamples:
-                end = nexamples
-
             features_batch = features[i:end]
             feed_dict = { model.features: features_batch }
             all_sam_cap[i:end] = sess.run(sampled_captions, feed_dict)  
