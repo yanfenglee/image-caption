@@ -2,10 +2,11 @@ from core.solver import CaptioningSolver
 from core.model import CaptionGenerator
 from core.utils import *
 import os
+import sys
 from img_cap_data import ImgCapData
 from feature_extractor import FeatureExtractor
 
-def main():
+def main(epoch = 10):
     basedir = os.environ['ML_DATA']+"/challenge/"
     # load train dataset
     train_data = ImgCapData(basedir=basedir+'train', anno_file="caption.json")
@@ -25,4 +26,5 @@ def main():
     solver.train()
 
 if __name__ == "__main__":
-    main()
+    epoch = int(sys.argv[1])
+    main(epoch)

@@ -11,6 +11,7 @@ import pandas as pd
 from core.utils import *
 import os
 import json
+import sys
 
 class FeatureExtractor(object):
 
@@ -57,11 +58,11 @@ if __name__ == "__main__":
     basedir = os.environ['ML_DATA']+"/challenge/"
     folder = sys.argv[1]
 
-    data = ImgCapData(basedir=basedir+folder, anno_file="caption.json")
+    data = ImgCapData(basedir=basedir+folder)
     data.load_data()
 
 
     savepath = basedir + folder
-    fe = FeatureExtractor(save_path=None)
+    fe = FeatureExtractor(save_path=savepath)
 
     fe.extract_vgg(data)

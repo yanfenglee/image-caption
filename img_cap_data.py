@@ -28,7 +28,7 @@ class ImgCapData(object):
         self.caption_vecs = None
         self.w2idx = None
         self.max_length = max_length
-        self.anno_file = basedir+anno_file
+        self.anno_file = basedir+'/'+anno_file
         self.features = None
         self.max_sample = max_sample
 
@@ -110,6 +110,9 @@ class ImgCapData(object):
         self.image_idx_vec = image_idx_vecs
         self.caption_vecs = captions
 
+        print('n_examples: ', n_examples)
+        print('captions shape: ', captions.shape)
+
     def decode_caption_vec(self, caption_vec):
         if caption_vec.ndim != 2:
             raise RuntimeError('caption dim must be 2')
@@ -174,12 +177,12 @@ class ImgCapData(object):
             self.caption_vecs = self._load('/caption_vecs.pkl')
 
 def test_build():
-    basedir = '/Users/lyfpcy/ml/challenge/val/'
+    basedir = '/Users/lyfpcy/ml/challenge/test/'
     data = ImgCapData(basedir,'caption.json')
     data.build_all_and_save()
 
 def test_load():
-    basedir = '/Users/lyfpcy/ml/challenge/val/'
+    basedir = '/Users/lyfpcy/ml/challenge/test/'
     data = ImgCapData(basedir,'caption.json')
     data.load_data()
     
@@ -195,4 +198,5 @@ def test_load():
         print img,' ==> ', cap
     
 if __name__ == "__main__":
+    test_build()
     test_load()

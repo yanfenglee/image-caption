@@ -12,6 +12,6 @@ if len(sys.argv) <= 2:
 else:
     sample_num = int(sys.argv[2])
 
-data = ImgCapData(basedir=basedir+datadir, anno_file='caption.json', max_sample = sample_num)
+data = ImgCapData(basedir=basedir+datadir, max_sample = sample_num)
 
 data.build_all_and_save()

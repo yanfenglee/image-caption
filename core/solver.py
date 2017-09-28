@@ -57,7 +57,7 @@ class CaptioningSolver(object):
         # train/val dataset
         n_examples = self.train_data.caption_vecs.shape[0]
         n_iters_per_epoch = int(np.ceil(float(n_examples)/self.batch_size))
-        features = self.train_data.features
+        features = self.features
         captions = self.train_data.caption_vecs
         image_idxs = self.train_data.image_idx_vec
 
