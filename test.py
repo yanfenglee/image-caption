@@ -41,13 +41,17 @@ def test(sample_dir="val",model_num=1):
     with tf.Session(config=config) as sess:
         tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt'+model_num)
 
-        num_iter = int(np.ceil(float(features.shape[0]) / batch_size))
-        all_sam_cap = np.ndarray((num_iter*batch_size, 20))
+        nexamples = features.shape[0]
+        all_sam_cap = np.ndarray((nexamples, 20))
 
-        for i in range(num_iter):
-            features_batch = features[i*batch_size:(i+1)*batch_size]
+        for i in range(0, nexamples, batch_size):
+            end = i+batch_size
+            if end > nexamples:
+                end = nexamples
+
+            features_batch = features[i:end]
             feed_dict = { model.features: features_batch }
-            all_sam_cap[i*batch_size:(i+1)*batch_size] = sess.run(sampled_captions, feed_dict)  
+            all_sam_cap[i:end] = sess.run(sampled_captions, feed_dict)  
 
         all_decoded = model_data.decode_caption_vec(all_sam_cap)
 
