@@ -61,5 +61,6 @@ def test(sample_dir="val",model_num=1):
 
 
 if __name__ == "__main__":
-    n = sys.argv[1]
-    test("val", model_num=n)
+    folder = sys.argv[1]
+    n = sys.argv[2]
+    test(folder, model_num=n)
