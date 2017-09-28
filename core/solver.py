@@ -10,7 +10,7 @@ from core.bleu import evaluate
 
 
 class CaptioningSolver(object):
-    def __init__(self, model, train_data, val_data, **kwargs):
+    def __init__(self, model, features, train_data, **kwargs):
         """
         Required Arguments:
             - model: Show Attend and Tell caption generating model
@@ -35,10 +35,9 @@ class CaptioningSolver(object):
 
         self.model = model
         self.train_data = train_data
-        self.val_data = val_data
+        self.features = features
         self.n_epochs = kwargs.pop('n_epochs', 10)
         self.batch_size = kwargs.pop('batch_size', 100)
-        self.update_rule = kwargs.pop('update_rule', 'adam')
         self.learning_rate = kwargs.pop('learning_rate', 0.01)
         self.print_bleu = kwargs.pop('print_bleu', False)
         self.print_every = kwargs.pop('print_every', 100)
@@ -61,8 +60,6 @@ class CaptioningSolver(object):
         features = self.train_data.features
         captions = self.train_data.caption_vecs
         image_idxs = self.train_data.image_idx_vec
-        val_features = self.val_data.features
-        n_iters_val = int(np.ceil(float(val_features.shape[0])/self.batch_size))
 
         # build graphs for training model and sampling captions
         loss = self.model.build_model()

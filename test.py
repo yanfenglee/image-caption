@@ -5,6 +5,7 @@ from img_cap_data import ImgCapData
 import tensorflow as tf
 import json
 import sys
+from feature_extractor import FeatureExtractor
 
 
 def save_json(data, path):
@@ -23,15 +24,13 @@ def test(sample_dir="val",model_num=1):
 
     data = ImgCapData(basedir=basedir+sample_dir)
     data.load_data()
-    data.load_feature()
 
+    features = FeatureExtractor(basedir+sample_dir).load_feature()
 
 
     model = CaptionGenerator(imgcap=model_data, dim_feature=[196, 512], dim_embed=512,
                                        dim_hidden=1024, n_time_step=16, prev2out=True, 
                                                  ctx2out=True, alpha_c=1.0, selector=True, dropout=True)
-
-    features = data.features
 
     # build a graph to sample captions
     alphas, betas, sampled_captions = model.build_inference(max_len=20)    # (N, max_len, L), (N, max_len)

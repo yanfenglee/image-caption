@@ -9,7 +9,6 @@ import pandas as pd
 import sys
 import os
 import json
-from feature_extractor import *
 
 class ImgCapData(object):
     # special tokens
@@ -140,8 +139,11 @@ class ImgCapData(object):
     def _load(self, path):
         return load_pickle(self.basedir + path)
 
+    def _anno_exist(self):
+        return os.path.isfile(self.anno_file)
+
     def build_all_and_save(self):
-        if self.anno_file == None:
+        if not self._anno_exist():
             self.process_images()
             self._save(self.image_idx2file, '/image_idx2file.pkl')
 
@@ -160,7 +162,7 @@ class ImgCapData(object):
 
         
     def load_data(self):
-        if self.anno_file == None:
+        if not self._anno_exist():
             self.image_idx2file = self._load('/image_idx2file.pkl')
 
         else:
@@ -170,14 +172,6 @@ class ImgCapData(object):
             self.w2idx = self._load('/w2idx.pkl')
             self.idx2w = self._load('/idx2w.pkl')
             self.caption_vecs = self._load('/caption_vecs.pkl')
-
-    def extract_feature(self):
-        fe = FeatureExtractor(self)
-        self.features = fe.extract_vgg()
-        self._save(self.features, '/features.pkl')
-
-    def load_feature(self):
-        self.features = self._load('/features.pkl')
 
 def test_build():
     basedir = '/Users/lyfpcy/ml/challenge/val/'
