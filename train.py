@@ -6,13 +6,13 @@ import sys
 from img_cap_data import ImgCapData
 from feature_extractor import FeatureExtractor
 
-def main(epoch = 10):
+def main(folder,epoch = 10):
     basedir = os.environ['ML_DATA']+"/challenge/"
     # load train dataset
-    train_data = ImgCapData(basedir=basedir+'train', anno_file="caption.json")
+    train_data = ImgCapData(basedir=basedir+folder, anno_file="caption.json")
     train_data.load_data()
 
-    train_feature = FeatureExtractor(basedir+'train').load_feature()
+    train_feature = FeatureExtractor(basedir+folder).load_feature()
 
     model = CaptionGenerator(imgcap=train_data, dim_feature=[196, 512], dim_embed=512,
                                        dim_hidden=1024, n_time_step=16, prev2out=True, 
@@ -26,5 +26,6 @@ def main(epoch = 10):
     solver.train()
 
 if __name__ == "__main__":
-    epoch = int(sys.argv[1])
-    main(epoch)
+    folder = sys.argv[1]
+    epoch = int(sys.argv[2])
+    main(folder=folder,epoch=epoch)
