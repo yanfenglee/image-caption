@@ -63,7 +63,7 @@ class CaptioningSolver(object):
         features = np.stack(features,axis=0)
 
         t1 = time.time()
-        print 'read features spend time: ', t1-t0
+        #print 'read features spend time: ', t1-t0
 
         return features
 
