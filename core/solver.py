@@ -123,15 +123,15 @@ class CaptioningSolver(object):
                     print "1 batch spend time: ", t1-t0
 
                     if (i+1) % self.print_every == 0:
-                        print("\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(epoch+1, i+1, l))
+                        print "\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(epoch+1, i+1, l)
                         ground_truths = captions[image_idxs == image_idxs_batch[0]]
                         decoded = self.train_data.decode_caption_vec(ground_truths)
                         for j, gt in enumerate(decoded):
-                            print("Ground truth %d: %s" %(j+1, gt))
+                            print "Ground truth %d: %s" %(j+1, gt)
                         gen_caps = sess.run(generated_captions, feed_dict)
                         decoded = self.train_data.decode_caption_vec(gen_caps)
                         t2 = time.time()
-                        print("Generated caption: %s\n" %decoded[0])
+                        print "Generated caption: %s\n" %decoded[0]
 
                 print ("Previous epoch loss: ", prev_loss)
                 print ("Current epoch loss: ", curr_loss)
