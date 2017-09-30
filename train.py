@@ -19,7 +19,7 @@ def main(folder,epoch = 10):
                                                  ctx2out=True, alpha_c=1.0, selector=True, dropout=True)
 
     solver = CaptioningSolver(model, train_data=train_data, features=train_feature, n_epochs=epoch, batch_size=128,
-                                          learning_rate=0.001, print_every=1, save_every=10, image_path=basedir+'/image/',
+                                          learning_rate=0.001, print_every=100, save_every=10, image_path=basedir+'/image/',
                                     pretrained_model=None, model_path=basedir+'/model/',
                                      print_bleu=True, log_path=basedir+'/log/')
 
