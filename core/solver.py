@@ -52,12 +52,26 @@ class CaptioningSolver(object):
         if not os.path.exists(self.log_path):
             os.makedirs(self.log_path)
 
+    def get_feature(self, idxs):
+        t0 = time.time()
+
+        features = []
+        for i in idxs:
+            feat = self.features[i]
+            features.append(feat)
+
+        features = np.stack(features,axis=0)
+
+        t1 = time.time()
+        print 'read features spend time: ', t1-t0
+
+        return features
 
     def train(self):
         # train/val dataset
         n_examples = self.train_data.caption_vecs.shape[0]
         n_iters_per_epoch = int(np.ceil(float(n_examples)/self.batch_size))
-        features = self.features
+        #features = self.features
         captions = self.train_data.caption_vecs
         image_idxs = self.train_data.image_idx_vec
 
@@ -96,12 +110,17 @@ class CaptioningSolver(object):
                 image_idxs = image_idxs[rand_idxs]
 
                 for i in range(n_iters_per_epoch):
+                    t0 = time.time()
+
                     captions_batch = captions[i*self.batch_size:(i+1)*self.batch_size]
                     image_idxs_batch = image_idxs[i*self.batch_size:(i+1)*self.batch_size]
-                    features_batch = features[image_idxs_batch]
+                    features_batch = self.get_feature(image_idxs_batch)
                     feed_dict = {self.model.features: features_batch, self.model.captions: captions_batch}
                     _, l = sess.run([train_op, loss], feed_dict)
                     curr_loss += l
+
+                    t1 = time.time()
+                    print "1 batch spend time: ", t1-t0
 
                     if (i+1) % self.print_every == 0:
                         print("\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(epoch+1, i+1, l))
@@ -111,6 +130,7 @@ class CaptioningSolver(object):
                             print("Ground truth %d: %s" %(j+1, gt))
                         gen_caps = sess.run(generated_captions, feed_dict)
                         decoded = self.train_data.decode_caption_vec(gen_caps)
+                        t2 = time.time()
                         print("Generated caption: %s\n" %decoded[0])
 
                 print ("Previous epoch loss: ", prev_loss)

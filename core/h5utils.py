@@ -20,7 +20,7 @@ class H5Tensor(object):
         if self.h == None:
             raise RuntimeError("no data found")
 
-        return self.h['data'][:]
+        return self.h['data']
 
     def get_shape(self):
         if self.h != None:
