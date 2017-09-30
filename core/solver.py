@@ -131,7 +131,7 @@ class CaptioningSolver(object):
                         gen_caps = sess.run(generated_captions, feed_dict)
                         decoded = self.train_data.decode_caption_vec(gen_caps)
                         t2 = time.time()
-                        print "Generated caption: %s\n" %decoded[0]
+                        print "Generated caption: %s\n" %decoded[0], ' gen time: ',t2-t1
 
                 print ("Previous epoch loss: ", prev_loss)
                 print ("Current epoch loss: ", curr_loss)
