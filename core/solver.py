@@ -82,6 +82,13 @@ class CaptioningSolver(object):
         tf.get_variable_scope().reuse_variables()
         _, _, generated_captions = self.model.build_inference(max_len=20)
 
+        # summary op   
+        tf.summary.scalar('batch_loss', loss)
+        for var in tf.trainable_variables():
+            tf.summary.histogram(var.op.name, var)
+        
+        summary_op = tf.summary.merge_all() 
+
 
         print("Data size: %d" %n_examples)
         print("Batch size: %d" %self.batch_size)
@@ -92,7 +99,7 @@ class CaptioningSolver(object):
         config.gpu_options.allow_growth = True
         with tf.Session(config=config) as sess:
             tf.global_variables_initializer().run()
-            #summary_writer = tf.train.SummaryWriter(self.log_path, graph=tf.get_default_graph())
+            summary_writer = tf.summary.FileWriter(self.log_path, graph=sess.graph)
             saver = tf.train.Saver(max_to_keep=40)
 
             if self.pretrained_model is not None:
@@ -120,7 +127,14 @@ class CaptioningSolver(object):
                     curr_loss += l
 
                     t1 = time.time()
-                    print "1 batch spend time: ", t1-t0
+                    #print "1 batch spend time: ", t1-t0
+
+                    # write summary for tensorboard visualization
+                    if i % 1 == 0:
+                        print 'current loss: ', curr_loss
+                        summary = sess.run(summary_op, feed_dict)
+                        summary_writer.add_summary(summary, epoch*n_iters_per_epoch + i)
+
 
                     # if (i+1) % self.print_every == 0:
                     #     print "\nTrain loss at epoch %d & iteration %d (mini-batch): %.5f" %(epoch+1, i+1, l)
