@@ -138,7 +138,7 @@ class CaptioningSolver(object):
 
                     # write summary for tensorboard visualization
                     if i % 10 == 0:
-                        print 'current loss: ', curr_loss
+                        print 'current batch loss: ', l
                         summary = sess.run(summary_op, feed_dict)
                         summary_writer.add_summary(summary, epoch*n_iters_per_epoch + i)
 
