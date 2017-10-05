@@ -9,6 +9,7 @@ import pandas as pd
 import sys
 import os
 import json
+import hashlib
 
 class ImgCapData(object):
     # special tokens
@@ -64,6 +65,21 @@ class ImgCapData(object):
                     data += [{'image_id':image_id,'caption':cap}]
 
         self.annotations = data
+
+    def save_ref_for_eval_score(self):
+        self.flatten_annotations()
+        ref = {"annotations":[],"images":[],"type": "captions"}
+        for i, ann in enumerate(self.annotations):
+            caption = ' '.join(seg(ann['caption']))
+            img = ann['image_id'].strip('.jpg')
+            image_id = int(int(hashlib.sha256(img).hexdigest(), 16) % sys.maxint)
+            
+            ref["annotations"].append({"id":i+1, "caption":caption, "image_id":image_id})
+            ref["images"].append({"file_name":img, "id":image_id})
+
+        with open(self.basedir+"/caption_ref.json", 'wb') as f:
+            json.dump(ref, f)
+
 
     def build_image_idx(self):
         imgs = Counter()
