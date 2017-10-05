@@ -67,6 +67,12 @@ class CaptioningSolver(object):
 
         return features
 
+    def get_model_path(self, no=-1):
+        path = os.path.join(self.model_path, 'imgcap-model/model.ckpt')
+        if no >= 0:
+            path += '-'+str(no)
+        return path
+
     def train(self):
         # train/val dataset
         n_examples = self.train_data.caption_vecs.shape[0]
@@ -102,9 +108,10 @@ class CaptioningSolver(object):
             summary_writer = tf.summary.FileWriter(self.log_path, graph=sess.graph)
             saver = tf.train.Saver(max_to_keep=40)
 
-            if self.pretrained_model is not None:
-                print("Start training with pretrained Model..")
-                saver.restore(sess, self.pretrained_model)
+            if self.pretrained_model >= 0:
+                trained_mode = self.get_model_path(self.pretrained_model)
+                print("Start training with pretrained Model: ", trained_mode)
+                saver.restore(sess, trained_mode)
 
             prev_loss = -1
             curr_loss = 0
@@ -171,7 +178,7 @@ class CaptioningSolver(object):
                 epoch += 1
                 # save model's parameters
                 if epoch % self.save_every == 0 or epoch == self.n_epochs:
-                    saver.save(sess, os.path.join(self.model_path, 'imgcap-model/model.ckpt'), global_step=epoch)
+                    saver.save(sess, self.get_model_path(), global_step=epoch)
                     print ("model.ckpt-%s saved." % epoch)
             
          

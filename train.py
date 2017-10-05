@@ -5,8 +5,9 @@ import os
 import sys
 from img_cap_data import ImgCapData
 from feature_extractor import FeatureExtractor
+import argparse
 
-def main(folder,epoch = 10):
+def main(folder,epoch,pretrained_model):
     basedir = os.environ['ML_DATA']+"/challenge/"
     # load train dataset
     train_data = ImgCapData(basedir=basedir+folder, anno_file="caption.json")
@@ -19,13 +20,18 @@ def main(folder,epoch = 10):
                                                  ctx2out=True, alpha_c=1.0, selector=True, dropout=True)
 
     solver = CaptioningSolver(model, train_data=train_data, features=train_feature, n_epochs=epoch, batch_size=128,
-                                          learning_rate=0.001, print_every=100, save_every=10, image_path=basedir+'/image/',
-                                    pretrained_model=None, model_path=basedir+'/model/',
+                                          learning_rate=0.001, print_every=100, save_every=1, image_path=basedir+'/image/',
+                                    pretrained_model=pretrained_model, model_path=basedir+'/model/',
                                      print_bleu=True, log_path=basedir+'/log/')
 
     solver.train()
 
 if __name__ == "__main__":
-    folder = sys.argv[1]
-    epoch = int(sys.argv[2])
-    main(folder=folder,epoch=epoch)
+    ps = argparse.ArgumentParser()
+    ps.add_argument("--folder", required=True, help="train data folder")
+    ps.add_argument("--model", type=int, default=-1, help="continue with pretrained model")
+    ps.add_argument("--epoch", type=int, default=100, help="epoch number")
+
+    args = ps.parse_args()
+
+    main(folder=args.folder,epoch=args.epoch,pretrained_model=args.model)
