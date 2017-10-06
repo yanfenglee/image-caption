@@ -68,7 +68,7 @@ class ImgCapData(object):
 
     def save_ref_for_eval_score(self):
         self.flatten_annotations()
-        ref = {"annotations":[],"images":[],"type": "captions"}
+        ref = {"annotations":[],"images":[],"info":{"contributor":"lyf"},"licenses":[{"url":"medishare.com"}],"type": "captions"}
         for i, ann in enumerate(self.annotations):
             caption = ' '.join(seg(ann['caption']))
             img = ann['image_id'].strip('.jpg')
