@@ -13,7 +13,7 @@ def save_json(data, path):
         json.dump(data, f)
         print 'save json finished: ', path
 
-def test(sample_dir="val",model_num=1):
+def test(sample_dir="val",model_num=1, maxlen=15):
 
     basedir = os.environ['ML_DATA']+"/challenge/"
     batch_size = 128
@@ -34,7 +34,7 @@ def test(sample_dir="val",model_num=1):
                                                  ctx2out=True, alpha_c=1.0, selector=True, dropout=True)
 
     # build a graph to sample captions
-    alphas, betas, sampled_captions = model.build_inference(max_len=20)    # (N, max_len, L), (N, max_len)
+    alphas, betas, sampled_captions = model.build_inference(max_len=maxlen)    # (N, max_len, L), (N, max_len)
     
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth = True
@@ -43,7 +43,7 @@ def test(sample_dir="val",model_num=1):
         tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt'+model_num)
 
         nexamples = features.shape[0]
-        all_sam_cap = np.ndarray((nexamples, 20),dtype=np.int32)
+        all_sam_cap = np.ndarray((nexamples, maxlen),dtype=np.int32)
 
         for i in range(0, nexamples, batch_size):
             end = i+batch_size
