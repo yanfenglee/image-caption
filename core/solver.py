@@ -117,7 +117,7 @@ class CaptioningSolver(object):
             curr_loss = 0
             start_t = time.time()
 
-            epoch = 0
+            epoch = max(self.pretrained_model,0)
             while epoch < self.n_epochs:
                 rand_idxs = np.random.permutation(n_examples)
                 captions = captions[rand_idxs]
