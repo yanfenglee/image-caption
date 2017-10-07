@@ -13,11 +13,11 @@ def save_json(data, path):
         json.dump(data, f)
         print 'save json finished: ', path
 
-def test(sample_dir="val",model_num=1, maxlen=15):
+def inference(sample_dir="val",model_num=1, maxlen=15):
 
     basedir = os.environ['ML_DATA']+"/challenge/"
     batch_size = 128
-    save_path = basedir+sample_dir+"/test.json"
+    save_path = basedir+sample_dir+"/infer.json"
 
     model_data = ImgCapData(basedir=basedir+"train")
     model_data.load_data()
@@ -65,4 +65,4 @@ def test(sample_dir="val",model_num=1, maxlen=15):
 if __name__ == "__main__":
     folder = sys.argv[1]
     n = sys.argv[2]
-    test(folder, model_num=n)
+    inference(folder, model_num=n)
