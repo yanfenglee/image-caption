@@ -6,6 +6,7 @@ import tensorflow as tf
 import json
 import sys
 from feature_extractor import FeatureExtractor
+import argparse
 
 
 def save_json(data, path):
@@ -40,7 +41,7 @@ def inference(sample_dir="val",model_num=1, maxlen=15):
     config.gpu_options.allow_growth = True
 
     with tf.Session(config=config) as sess:
-        tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt'+model_num)
+        tf.train.Saver().restore(sess, basedir+'/model/imgcap-model/model.ckpt-'+str(model_num))
 
         nexamples = features.shape[0]
         all_sam_cap = np.ndarray((nexamples, maxlen),dtype=np.int32)
@@ -63,6 +64,10 @@ def inference(sample_dir="val",model_num=1, maxlen=15):
 
 
 if __name__ == "__main__":
-    folder = sys.argv[1]
-    n = sys.argv[2]
-    inference(folder, model_num=n)
+    ps = argparse.ArgumentParser()
+    ps.add_argument("--folder", required=True, help="inference data folder")
+    ps.add_argument("--model", required=True, help="model number used for inference")
+    ps.add_argument("--maxlen", type=int, default=15, help="sentence max length")
+    args = ps.parse_args()
+
+    inference(args.folder, model_num=args.model,maxlen=args.maxlen)
