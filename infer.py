@@ -66,7 +66,7 @@ def inference(sample_dir="val",model_num=1, maxlen=15):
 if __name__ == "__main__":
     ps = argparse.ArgumentParser()
     ps.add_argument("--folder", required=True, help="inference data folder")
-    ps.add_argument("--model", required=True, help="model number used for inference")
+    ps.add_argument("--model", type=int, required=True, help="model number used for inference")
     ps.add_argument("--maxlen", type=int, default=15, help="sentence max length")
     args = ps.parse_args()
 
