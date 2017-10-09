@@ -18,7 +18,7 @@ def inference(sample_dir="val",model_num=1, maxlen=15):
 
     basedir = os.environ['ML_DATA']+"/challenge/"
     batch_size = 128
-    save_path = basedir+sample_dir+"/infer.json"
+    save_path = basedir+sample_dir+"/infer%d.json"%model_num
 
     model_data = ImgCapData(basedir=basedir+"train")
     model_data.load_data()
